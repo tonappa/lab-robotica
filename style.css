@@ -37,22 +37,12 @@
   }
 }
 
-/* Animated ring around logo */
-.splash-ring {
-  position: absolute;
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  border-top-color: #818cf8;
-  border-right-color: rgba(129, 140, 248, 0.3);
-  animation: splash-spin 1.2s linear infinite;
-}
-
-@keyframes splash-spin {
-  to {
-    transform: rotate(360deg);
-  }
+/* Logo with pulsing glow */
+.splash-logo-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .splash-logo {
