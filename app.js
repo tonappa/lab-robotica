@@ -222,6 +222,12 @@ import {
 
   // ── Cache Accessors (synchronous, from in-memory cache) ───
   function isDayClosed(dateStr) {
+    // Weekends (Saturday=6, Sunday=0) are automatically closed
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    const dow = date.getDay();
+    if (dow === 0 || dow === 6) return true;
+
     return !!closuresCache[dateStr];
   }
 

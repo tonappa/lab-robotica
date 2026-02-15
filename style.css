@@ -1171,13 +1171,19 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   }
 
   .day-cell {
-    min-height: 68px;
+    height: 100px;
+    /* Fixed height for stability on mobile */
     padding: 5px 4px 4px;
+    overflow: hidden;
   }
 
   .day-badge {
     font-size: 0.58rem;
-    padding: 1px 3px;
+    padding: 2px 4px;
+    white-space: normal;
+    /* Force wrapping */
+    word-break: break-word;
+    line-height: 1.2;
   }
 
   .month-label {
