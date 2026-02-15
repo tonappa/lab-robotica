@@ -14,6 +14,7 @@ import {
 
   let currentYear, currentMonth; // 0-indexed month
   let selectedDate = null;
+  let currentLang = localStorage.getItem('lab-lang') || 'it';
 
   // In-memory cache (synced with Firestore via onSnapshot)
   let bookingsCache = {};
@@ -21,12 +22,159 @@ import {
   let isSaving = false; // Guard flag to prevent onSnapshot re-renders during save/delete
   let dataLoaded = false;
 
-  const MONTHS_IT = [
-    'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
-    'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
-  ];
+  const TRANSLATIONS = {
+    it: {
+      title: "Prenotazione Laboratorio Robotica",
+      subtitle: "Prenotazione laboratorio",
+      today: "Oggi",
+      months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+      days: { mon: 'Lun', tue: 'Mar', wed: 'Mer', thu: 'Gio', fri: 'Ven', sat: 'Sab', sun: 'Dom' },
+      legend: {
+        student: "Studente",
+        absence: "Assenza tutor",
+        closed: "Lab chiuso"
+      },
+      guide: {
+        title: "📖 Guida rapida",
+        blue: "<strong>Azzurro</strong> — Prenotazione studente",
+        blue_detail: "Clicca sul giorno per prenotare il lab con nome e orario.",
+        pink: "<strong>Rosa</strong> — Assenza tutor",
+        pink_detail: "Il tutor segnala le ore in cui non sarà disponibile.",
+        red: "<strong>Rosso</strong> — Lab chiuso",
+        red_detail: "Il tutor ha chiuso il laboratorio per l'intera giornata. Non è possibile prenotare.",
+        yellow: "<strong>Giallo</strong> — Fascia oraria piena",
+        yellow_detail: "Max <strong>2 studenti</strong> possono sovrapporsi. Se una fascia è piena, il badge diventa giallo."
+      },
+      modal: {
+        closed_toggle: "Lab chiuso per la giornata",
+        closed_label: "🔒 Lab chiuso",
+        full_label: "⚠ {n}/{max} studenti",
+        confirm_delete: "Eliminare questa prenotazione?",
+        entries_title: "Prenotazioni",
+        student_label: "Prenotazione studente",
+        tutor_label: "Assenza tutor"
+      },
+      form: {
+        title: "Nuova prenotazione",
+        type: "Tipo",
+        student_booking: "Studente — Prenota lab",
+        tutor_absence: "Tutor — Assenza",
+        name: "Nome",
+        name_placeholder: "Il tuo nome",
+        time: "Orario",
+        optional: "(opzionale)",
+        notes: "Note",
+        notes_placeholder: "Es: progetto droni, esperimenti, ecc.",
+        add: "Aggiungi",
+        saving: "Salvataggio…"
+      },
+      errors: {
+        save: "Errore salvataggio:",
+        conn: "Errore di connessione. Riprova."
+      }
+    },
+    en: {
+      title: "Robotics Lab Booking",
+      subtitle: "Lab reservation system",
+      today: "Today",
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      days: { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' },
+      legend: {
+        student: "Student",
+        absence: "Tutor absence",
+        closed: "Lab closed"
+      },
+      guide: {
+        title: "📖 Quick Guide",
+        blue: "<strong>Blue</strong> — Student booking",
+        blue_detail: "Click on a day to book the lab with your name and time.",
+        pink: "<strong>Pink</strong> — Tutor absence",
+        pink_detail: "Tutor marks hours when they won't be available.",
+        red: "<strong>Red</strong> — Lab closed",
+        red_detail: "Tutor closed the lab for the entire day. Booking is not possible.",
+        yellow: "<strong>Yellow</strong> — Full slot",
+        yellow_detail: "Max <strong>2 students</strong> can overlap. If a slot is full, the badge turns yellow."
+      },
+      modal: {
+        closed_toggle: "Lab closed for the day",
+        closed_label: "🔒 Lab closed",
+        full_label: "⚠ {n}/{max} students",
+        confirm_delete: "Delete this booking?",
+        entries_title: "Bookings",
+        student_label: "Student booking",
+        tutor_label: "Tutor absence"
+      },
+      form: {
+        title: "New booking",
+        type: "Type",
+        student_booking: "Student — Book lab",
+        tutor_absence: "Tutor — Absence",
+        name: "Name",
+        name_placeholder: "Your name",
+        time: "Time",
+        optional: "(optional)",
+        notes: "Notes",
+        notes_placeholder: "e.g. drone project, experiments, etc.",
+        add: "Add",
+        saving: "Saving…"
+      },
+      errors: {
+        save: "Save error:",
+        conn: "Connection error. Please try again."
+      }
+    }
+  };
 
-  const DAYS_SHORT = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+  function t(path, params = {}) {
+    const keys = path.split('.');
+    let result = TRANSLATIONS[currentLang];
+    for (const key of keys) {
+      result = result ? result[key] : null;
+    }
+    if (typeof result === 'string') {
+      for (const [p, v] of Object.entries(params)) {
+        result = result.replace(`{${p}}`, v);
+      }
+    }
+    return result || path;
+  }
+
+  function updateLanguage() {
+    // Update static HTML elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      el.innerHTML = t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      el.placeholder = t(key);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const key = el.dataset.i18nTitle;
+      document.title = t(key);
+    });
+
+    // Update active button state
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === currentLang);
+    });
+
+    renderCalendar();
+    if (selectedDate) {
+      renderEntries(selectedDate);
+      $modalTitle.textContent = formatDateForTitle(selectedDate);
+    }
+    console.log(`[i18n] Language updated to: ${currentLang}`);
+  }
+
+  // Expose to window for debugging/subagent
+  window.setLanguage = (lang) => {
+    if (TRANSLATIONS[lang]) {
+      currentLang = lang;
+      localStorage.setItem('lab-lang', lang);
+      updateLanguage();
+    }
+  };
 
   // ── DOM References ─────────────────────────────────────────
   const $grid = document.getElementById('calendar-grid');
@@ -182,8 +330,11 @@ import {
   function formatDateForTitle(dateStr) {
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
-    const dayName = DAYS_SHORT[(date.getDay() + 6) % 7];
-    return `${dayName} ${d} ${MONTHS_IT[m - 1]} ${y}`;
+    const dayIndex = (date.getDay() + 6) % 7;
+    const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    const dayName = t(`days.${dayKeys[dayIndex]}`);
+    const monthName = t('months')[m - 1];
+    return `${dayName} ${d} ${monthName} ${y}`;
   }
 
   function formatTime(from, to) {
@@ -203,7 +354,7 @@ import {
 
   // ── Calendar Rendering ─────────────────────────────────────
   function renderCalendar() {
-    $monthLabel.textContent = MONTHS_IT[currentMonth];
+    $monthLabel.textContent = t('months')[currentMonth];
     $yearLabel.textContent = currentYear;
 
     const firstDay = new Date(currentYear, currentMonth, 1);
@@ -243,12 +394,12 @@ import {
 
       // Closed label
       if (closed) {
-        badgesHtml += '<div class="day-closed-label">🔒 Lab chiuso</div>';
+        badgesHtml += `<div class="day-closed-label">${t('modal.closed_label')}</div>`;
       }
 
       // Full indicator
       if (!closed && maxConcurrent >= MAX_OVERLAP) {
-        badgesHtml += `<div class="day-badge day-badge--full">⚠ ${maxConcurrent}/${MAX_OVERLAP} studenti</div>`;
+        badgesHtml += `<div class="day-badge day-badge--full">${t('modal.full_label', { n: maxConcurrent, max: MAX_OVERLAP })}</div>`;
       }
 
       const shown = entries.slice(0, closed ? 0 : MAX_BADGES);
@@ -262,7 +413,8 @@ import {
 
       const remaining = entries.length - shown.length;
       if (remaining > 0) {
-        badgesHtml += `<div class="day-badge day-badge--more">+${remaining} altro</div>`;
+        const moreTxt = currentLang === 'it' ? `+${remaining} altro` : `+${remaining} more`;
+        badgesHtml += `<div class="day-badge day-badge--more">${moreTxt}</div>`;
       }
 
       badgesHtml += '</div>';
@@ -359,11 +511,11 @@ import {
     }
 
     let html = '<div class="entries-list">';
-    html += '<p class="entries-heading">Prenotazioni</p>';
+    html += `<p class="entries-heading">${t('modal.entries_title')}</p>`;
 
     for (const e of entries) {
       const cls = e.type === 'absence' ? 'entry-card--absence' : 'entry-card--booking';
-      const typeLabel = e.type === 'absence' ? 'Assenza tutor' : 'Prenotazione studente';
+      const typeLabel = e.type === 'absence' ? t('modal.tutor_label') : t('modal.student_label');
       const timeStr = formatTime(e.timeFrom, e.timeTo);
       html += `
         <div class="entry-card ${cls}">
@@ -394,7 +546,7 @@ import {
       btn.addEventListener('click', async (ev) => {
         ev.stopPropagation();
         const id = btn.dataset.id;
-        if (confirm('Eliminare questa prenotazione?')) {
+        if (confirm(t('modal.confirm_delete'))) {
           await removeEntry(dateStr, id);
           renderEntries(dateStr);
           renderCalendar();
@@ -442,7 +594,7 @@ import {
 
     // Disable button while saving
     $btnAdd.disabled = true;
-    $btnAdd.textContent = 'Salvataggio…';
+    $btnAdd.querySelector('span').textContent = t('form.saving');
 
     try {
       await addEntry(selectedDate, entry);
@@ -457,8 +609,8 @@ import {
       $inputName.focus();
       updateOverlapWarning();
     } catch (err) {
-      console.error('Errore salvataggio:', err);
-      alert('Errore di connessione. Riprova.');
+      console.error(t('errors.save'), err);
+      alert(t('errors.conn'));
     } finally {
       $btnAdd.disabled = false;
       $btnAdd.innerHTML = `
@@ -466,7 +618,7 @@ import {
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
-        Aggiungi`;
+        <span data-i18n="form.add">${t('form.add')}</span>`;
     }
   }
 
@@ -522,7 +674,7 @@ import {
     currentYear = now.getFullYear();
     currentMonth = now.getMonth();
 
-    renderCalendar();
+    updateLanguage();
 
     // Start real-time sync
     setupRealtimeListeners();
@@ -560,6 +712,15 @@ import {
     $inputFrom.addEventListener('change', updateOverlapWarning);
     $inputTo.addEventListener('change', updateOverlapWarning);
 
+    // Language Toggle
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentLang = btn.dataset.lang;
+        localStorage.setItem('lab-lang', currentLang);
+        updateLanguage();
+      });
+    });
+
     // Add entry
     $btnAdd.addEventListener('click', handleAdd);
     $inputName.addEventListener('keydown', (e) => {
@@ -568,4 +729,5 @@ import {
   }
 
   init();
+  console.log('[App] Initialized with language:', currentLang);
 })();

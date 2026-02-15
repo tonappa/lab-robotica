@@ -1,4 +1,123 @@
 /* ============================================================
+   Splash Screen
+   ============================================================ */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--splash-bg, #0a0a12);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.splash.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: splash-enter 0.6s ease-out;
+}
+
+@keyframes splash-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animated ring around logo */
+.splash-ring {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #818cf8;
+  border-right-color: rgba(129, 140, 248, 0.3);
+  animation: splash-spin 1.2s linear infinite;
+}
+
+@keyframes splash-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.splash-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  filter: brightness(1.2) drop-shadow(0 0 20px rgba(129, 140, 248, 0.4));
+  animation: splash-pulse 1.5s ease-in-out infinite alternate;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes splash-pulse {
+  from {
+    filter: brightness(1.2) drop-shadow(0 0 20px rgba(129, 140, 248, 0.3));
+  }
+
+  to {
+    filter: brightness(1.4) drop-shadow(0 0 35px rgba(129, 140, 248, 0.6));
+  }
+}
+
+.splash-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--splash-text, rgba(255, 255, 255, 0.6));
+  margin-top: 8px;
+}
+
+/* Loading bar */
+.splash-bar {
+  width: 160px;
+  height: 3px;
+  background: var(--splash-bar-bg, rgba(255, 255, 255, 0.08));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.splash-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #818cf8, #38bdf8);
+  border-radius: 2px;
+  animation: splash-load 1.8s ease-in-out forwards;
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.5);
+}
+
+@keyframes splash-load {
+  0% {
+    width: 0%;
+  }
+
+  60% {
+    width: 70%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+/* ============================================================
    Reset & Base
    ============================================================ */
 *,
@@ -51,6 +170,11 @@
   --overlay-bg: rgba(0, 0, 0, 0.6);
   --logo-filter: brightness(1.1);
 
+  /* Splash */
+  --splash-bg: #0a0a12;
+  --splash-text: rgba(255, 255, 255, 0.6);
+  --splash-bar-bg: rgba(255, 255, 255, 0.08);
+
   /* Sizes */
   --radius: 10px;
   --radius-sm: 6px;
@@ -102,6 +226,11 @@
     --modal-shadow: rgba(0, 0, 0, 0.12);
     --overlay-bg: rgba(0, 0, 0, 0.3);
     --logo-filter: none;
+
+    /* Splash light */
+    --splash-bg: #eaecf2;
+    --splash-text: rgba(30, 30, 60, 0.6);
+    --splash-bar-bg: rgba(0, 0, 0, 0.06);
   }
 }
 
@@ -202,6 +331,44 @@ body {
 .legend-dot--closed {
   background: var(--accent-closed);
   box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+/* ── Language Toggle ── */
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px;
+  margin-left: 8px;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 26px;
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  opacity: 0.5;
+}
+
+.lang-btn:hover {
+  opacity: 0.8;
+  background: var(--bg-hover);
+}
+
+.lang-btn.active {
+  opacity: 1;
+  background: var(--accent-primary);
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.3);
 }
 
 /* ============================================================

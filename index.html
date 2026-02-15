@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prenotazione Laboratorio Robotica</title>
+  <title data-i18n-title="title">Prenotazione Laboratorio Robotica</title>
   <meta name="description" content="Sistema di prenotazione laboratorio per studenti e tutor di robotica" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,6 +13,18 @@
 </head>
 
 <body>
+  <!-- Splash Screen -->
+  <div id="splash" class="splash">
+    <div class="splash-content">
+      <div class="splash-ring"></div>
+      <img src="logo-piaggio.png" alt="Centro E. Piaggio" class="splash-logo" />
+      <div class="splash-text">Lab Robotica</div>
+      <div class="splash-bar">
+        <div class="splash-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="app">
     <!-- Header -->
     <header class="header">
@@ -23,22 +35,26 @@
           <img src="Stemma_unipi.svg.png" alt="Università di Pisa" class="logo-img" />
           <div>
             <h1>Lab Robotica</h1>
-            <p class="subtitle">Prenotazione laboratorio</p>
+            <p class="subtitle" data-i18n="subtitle">Prenotazione laboratorio</p>
           </div>
         </div>
         <div class="legend-header">
           <span class="legend-item">
             <span class="legend-dot legend-dot--booking"></span>
-            Studente
+            <span data-i18n="legend.student">Studente</span>
           </span>
           <span class="legend-item">
             <span class="legend-dot legend-dot--absence"></span>
-            Assenza tutor
+            <span data-i18n="legend.absence">Assenza tutor</span>
           </span>
           <span class="legend-item">
             <span class="legend-dot legend-dot--closed"></span>
-            Lab chiuso
+            <span data-i18n="legend.closed">Lab chiuso</span>
           </span>
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="it" title="Italiano">🇮🇹</button>
+            <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+          </div>
         </div>
       </div>
     </header>
@@ -61,54 +77,58 @@
           <polyline points="9 18 15 12 9 6" />
         </svg>
       </button>
-      <button id="btn-today" class="today-btn">Oggi</button>
+      <button id="btn-today" class="today-btn" data-i18n="today">Oggi</button>
     </div>
 
     <!-- Calendar Grid -->
     <div class="calendar-container">
       <div class="calendar-header">
-        <div class="weekday">Lun</div>
-        <div class="weekday">Mar</div>
-        <div class="weekday">Mer</div>
-        <div class="weekday">Gio</div>
-        <div class="weekday">Ven</div>
-        <div class="weekday weekend">Sab</div>
-        <div class="weekday weekend">Dom</div>
+        <div class="weekday" data-i18n="days.mon">Lun</div>
+        <div class="weekday" data-i18n="days.tue">Mar</div>
+        <div class="weekday" data-i18n="days.wed">Mer</div>
+        <div class="weekday" data-i18n="days.thu">Gio</div>
+        <div class="weekday" data-i18n="days.fri">Ven</div>
+        <div class="weekday weekend" data-i18n="days.sat">Sab</div>
+        <div class="weekday weekend" data-i18n="days.sun">Dom</div>
       </div>
       <div id="calendar-grid" class="calendar-grid"></div>
     </div>
 
     <!-- Legend / Guide -->
     <div class="guide">
-      <h3 class="guide-title">📖 Guida rapida</h3>
+      <h3 class="guide-title" data-i18n="guide.title">📖 Guida rapida</h3>
       <div class="guide-grid">
         <div class="guide-item">
           <span class="guide-swatch guide-swatch--booking"></span>
           <div>
-            <strong>Azzurro</strong> — Prenotazione studente<br>
-            <span class="guide-detail">Clicca sul giorno per prenotare il lab con nome e orario.</span>
+            <span data-i18n="guide.blue"><strong>Azzurro</strong> — Prenotazione studente</span><br>
+            <span class="guide-detail" data-i18n="guide.blue_detail">Clicca sul giorno per prenotare il lab con nome e
+              orario.</span>
           </div>
         </div>
         <div class="guide-item">
           <span class="guide-swatch guide-swatch--absence"></span>
           <div>
-            <strong>Rosa</strong> — Assenza tutor<br>
-            <span class="guide-detail">Il tutor segnala le ore in cui non sarà disponibile.</span>
+            <span data-i18n="guide.pink"><strong>Rosa</strong> — Assenza tutor</span><br>
+            <span class="guide-detail" data-i18n="guide.pink_detail">Il tutor segnala le ore in cui non sarà
+              disponibile.</span>
           </div>
         </div>
         <div class="guide-item">
           <span class="guide-swatch guide-swatch--closed"></span>
           <div>
-            <strong>Rosso</strong> — Lab chiuso<br>
-            <span class="guide-detail">Il tutor ha chiuso il laboratorio per l'intera giornata. Non è possibile
+            <span data-i18n="guide.red"><strong>Rosso</strong> — Lab chiuso</span><br>
+            <span class="guide-detail" data-i18n="guide.red_detail">Il tutor ha chiuso il laboratorio per l'intera
+              giornata. Non è possibile
               prenotare.</span>
           </div>
         </div>
         <div class="guide-item">
           <span class="guide-swatch guide-swatch--full"></span>
           <div>
-            <strong>Giallo</strong> — Fascia oraria piena<br>
-            <span class="guide-detail">Max <strong>2 studenti</strong> possono sovrapporsi. Se una fascia è piena, il
+            <span data-i18n="guide.yellow"><strong>Giallo</strong> — Fascia oraria piena</span><br>
+            <span class="guide-detail" data-i18n="guide.yellow_detail">Max <strong>2 studenti</strong> possono
+              sovrapporsi. Se una fascia è piena, il
               badge diventa giallo.</span>
           </div>
         </div>
@@ -137,7 +157,7 @@
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
-            Lab chiuso per la giornata
+            <span data-i18n="modal.closed_toggle">Lab chiuso per la giornata</span>
           </span>
           <div class="toggle-switch">
             <input type="checkbox" id="toggle-closed" />
@@ -151,28 +171,30 @@
 
       <!-- Add new entry form -->
       <div id="form-section" class="modal-form">
-        <h3 class="form-heading">Nuova prenotazione</h3>
+        <h3 class="form-heading" data-i18n="form.title">Nuova prenotazione</h3>
         <div class="form-group">
-          <label for="entry-type">Tipo</label>
+          <label for="entry-type" data-i18n="form.type">Tipo</label>
           <div class="radio-group">
             <label class="radio-label">
               <input type="radio" name="entry-type" value="booking" checked />
               <span class="radio-custom radio-custom--booking"></span>
-              Studente — Prenota lab
+              <span data-i18n="form.student_booking">Studente — Prenota lab</span>
             </label>
             <label class="radio-label">
               <input type="radio" name="entry-type" value="absence" />
               <span class="radio-custom radio-custom--absence"></span>
-              Tutor — Assenza
+              <span data-i18n="form.tutor_absence">Tutor — Assenza</span>
             </label>
           </div>
         </div>
         <div class="form-group">
-          <label for="entry-name">Nome</label>
-          <input type="text" id="entry-name" class="form-input" placeholder="Il tuo nome" autocomplete="off" />
+          <label for="entry-name" data-i18n="form.name">Nome</label>
+          <input type="text" id="entry-name" class="form-input" data-i18n-placeholder="form.name_placeholder"
+            placeholder="Il tuo nome" autocomplete="off" />
         </div>
         <div class="form-group">
-          <label>Orario <span class="optional">(opzionale)</span></label>
+          <label><span data-i18n="form.time">Orario</span> <span class="optional"
+              data-i18n="form.optional">(opzionale)</span></label>
           <div class="time-row">
             <input type="time" id="entry-time-from" class="form-input" value="09:00" />
             <span class="time-separator">—</span>
@@ -189,22 +211,33 @@
           <span id="overlap-warning-text"></span>
         </div>
         <div class="form-group">
-          <label for="entry-note">Note <span class="optional">(opzionale)</span></label>
-          <textarea id="entry-note" class="form-input form-textarea" placeholder="Es: progetto droni, esperimenti, ecc."
-            rows="2"></textarea>
+          <label for="entry-note"><span data-i18n="form.notes">Note</span> <span class="optional"
+              data-i18n="form.optional">(opzionale)</span></label>
+          <textarea id="entry-note" class="form-input form-textarea" data-i18n-placeholder="form.notes_placeholder"
+            placeholder="Es: progetto droni, esperimenti, ecc." rows="2"></textarea>
         </div>
         <button id="btn-add" class="btn-add">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          Aggiungi
+          <span data-i18n="form.add">Aggiungi</span>
         </button>
       </div>
     </div>
   </div>
 
   <script type="module" src="app.js"></script>
+  <script>
+    // Dismiss splash screen after animation
+    setTimeout(() => {
+      const splash = document.getElementById('splash');
+      if (splash) {
+        splash.classList.add('fade-out');
+        splash.addEventListener('transitionend', () => splash.remove());
+      }
+    }, 2200);
+  </script>
 </body>
 
 </html>
