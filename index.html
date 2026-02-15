@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prenotazione Laboratorio Robotica</title>
+  <meta name="description" content="Sistema di prenotazione laboratorio per studenti e tutor di robotica" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <img src="logo-iit.png" alt="IIT" class="logo-img" />
+          <img src="logo-piaggio.png" alt="Centro E. Piaggio" class="logo-img" />
+          <img src="Stemma_unipi.svg.png" alt="Università di Pisa" class="logo-img" />
+          <div>
+            <h1>Lab Robotica</h1>
+            <p class="subtitle">Prenotazione laboratorio</p>
+          </div>
+        </div>
+        <div class="legend-header">
+          <span class="legend-item">
+            <span class="legend-dot legend-dot--booking"></span>
+            Studente
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot legend-dot--absence"></span>
+            Assenza tutor
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot legend-dot--closed"></span>
+            Lab chiuso
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Calendar Navigation -->
+    <div class="calendar-nav">
+      <button id="btn-prev" class="nav-btn" aria-label="Mese precedente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <div class="month-display">
+        <span id="month-label" class="month-label"></span>
+        <span id="year-label" class="year-label"></span>
+      </div>
+      <button id="btn-next" class="nav-btn" aria-label="Mese successivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+      <button id="btn-today" class="today-btn">Oggi</button>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <div class="weekday">Lun</div>
+        <div class="weekday">Mar</div>
+        <div class="weekday">Mer</div>
+        <div class="weekday">Gio</div>
+        <div class="weekday">Ven</div>
+        <div class="weekday weekend">Sab</div>
+        <div class="weekday weekend">Dom</div>
+      </div>
+      <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
+
+    <!-- Legend / Guide -->
+    <div class="guide">
+      <h3 class="guide-title">📖 Guida rapida</h3>
+      <div class="guide-grid">
+        <div class="guide-item">
+          <span class="guide-swatch guide-swatch--booking"></span>
+          <div>
+            <strong>Azzurro</strong> — Prenotazione studente<br>
+            <span class="guide-detail">Clicca sul giorno per prenotare il lab con nome e orario.</span>
+          </div>
+        </div>
+        <div class="guide-item">
+          <span class="guide-swatch guide-swatch--absence"></span>
+          <div>
+            <strong>Rosa</strong> — Assenza tutor<br>
+            <span class="guide-detail">Il tutor segnala le ore in cui non sarà disponibile.</span>
+          </div>
+        </div>
+        <div class="guide-item">
+          <span class="guide-swatch guide-swatch--closed"></span>
+          <div>
+            <strong>Rosso</strong> — Lab chiuso<br>
+            <span class="guide-detail">Il tutor ha chiuso il laboratorio per l'intera giornata. Non è possibile
+              prenotare.</span>
+          </div>
+        </div>
+        <div class="guide-item">
+          <span class="guide-swatch guide-swatch--full"></span>
+          <div>
+            <strong>Giallo</strong> — Fascia oraria piena<br>
+            <span class="guide-detail">Max <strong>2 studenti</strong> possono sovrapporsi. Se una fascia è piena, il
+              badge diventa giallo.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h2 id="modal-title" class="modal-title"></h2>
+        <button id="modal-close" class="modal-close" aria-label="Chiudi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Day closed toggle -->
+      <div id="closed-toggle-section" class="closed-toggle-section">
+        <label class="toggle-label" for="toggle-closed">
+          <span class="toggle-text">
+            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
+            Lab chiuso per la giornata
+          </span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="toggle-closed" />
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Existing entries for selected day -->
+      <div id="entries-section" class="entries-section"></div>
+
+      <!-- Add new entry form -->
+      <div id="form-section" class="modal-form">
+        <h3 class="form-heading">Nuova prenotazione</h3>
+        <div class="form-group">
+          <label for="entry-type">Tipo</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="entry-type" value="booking" checked />
+              <span class="radio-custom radio-custom--booking"></span>
+              Studente — Prenota lab
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="entry-type" value="absence" />
+              <span class="radio-custom radio-custom--absence"></span>
+              Tutor — Assenza
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="entry-name">Nome</label>
+          <input type="text" id="entry-name" class="form-input" placeholder="Il tuo nome" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label>Orario <span class="optional">(opzionale)</span></label>
+          <div class="time-row">
+            <input type="time" id="entry-time-from" class="form-input" value="09:00" />
+            <span class="time-separator">—</span>
+            <input type="time" id="entry-time-to" class="form-input" value="13:00" />
+          </div>
+        </div>
+        <!-- Overlap warning -->
+        <div id="overlap-warning" class="overlap-warning" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          <span id="overlap-warning-text"></span>
+        </div>
+        <div class="form-group">
+          <label for="entry-note">Note <span class="optional">(opzionale)</span></label>
+          <textarea id="entry-note" class="form-input form-textarea" placeholder="Es: progetto droni, esperimenti, ecc."
+            rows="2"></textarea>
+        </div>
+        <button id="btn-add" class="btn-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Aggiungi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+
+</html>
