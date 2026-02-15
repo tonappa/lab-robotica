@@ -14,7 +14,11 @@ import {
 
   let currentYear, currentMonth; // 0-indexed month
   let selectedDate = null;
-  let currentLang = localStorage.getItem('lab-lang') || 'it';
+  let currentLang = localStorage.getItem('lab-lang');
+  if (!currentLang) {
+    const browserLang = navigator.language || '';
+    currentLang = browserLang.startsWith('it') ? 'it' : 'en';
+  }
 
   // In-memory cache (synced with Firestore via onSnapshot)
   let bookingsCache = {};
@@ -407,7 +411,7 @@ import {
         const cls = e.type === 'absence' ? 'day-badge--absence' : 'day-badge--booking';
         const icon = e.type === 'absence' ? '✕ ' : '';
         const timeStr = formatTime(e.timeFrom, e.timeTo);
-        const timeTag = timeStr ? ` ${timeStr}` : '';
+        const timeTag = timeStr ? `<br><span class="badge-time">${timeStr}</span>` : '';
         badgesHtml += `<div class="day-badge ${cls}">${icon}${escapeHtml(e.name)}${timeTag}</div>`;
       }
 
