@@ -72,6 +72,11 @@ import {
         add: "Aggiungi",
         saving: "Salvataggio…"
       },
+      home: {
+        booking: "Prenotazione Lab",
+        thesis: "Progettini e Tesi"
+      },
+      back: "Indietro",
       errors: {
         save: "Errore salvataggio:",
         conn: "Errore di connessione. Riprova."
@@ -122,6 +127,11 @@ import {
         add: "Add",
         saving: "Saving…"
       },
+      home: {
+        booking: "Lab Booking",
+        thesis: "Projects & Theses"
+      },
+      back: "Back",
       errors: {
         save: "Save error:",
         conn: "Connection error. Please try again."
@@ -730,6 +740,7 @@ import {
         updateLanguage();
       });
     });
+
 
     // Add entry
     $btnAdd.addEventListener('click', handleAdd);

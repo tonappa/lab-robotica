@@ -27,7 +27,7 @@
   </div>
 
   <div class="app">
-    <!-- Header -->
+    <!-- Header — always visible -->
     <header class="header">
       <div class="header-content">
         <div class="logo">
@@ -40,18 +40,6 @@
           </div>
         </div>
         <div class="legend-header">
-          <span class="legend-item">
-            <span class="legend-dot legend-dot--booking"></span>
-            <span data-i18n="legend.student">Studente</span>
-          </span>
-          <span class="legend-item">
-            <span class="legend-dot legend-dot--absence"></span>
-            <span data-i18n="legend.absence">Assenza tutor</span>
-          </span>
-          <span class="legend-item">
-            <span class="legend-dot legend-dot--closed"></span>
-            <span data-i18n="legend.closed">Lab chiuso</span>
-          </span>
           <div class="lang-toggle">
             <button class="lang-btn active" data-lang="it" title="Italiano">🇮🇹</button>
             <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
@@ -60,84 +48,141 @@
       </div>
     </header>
 
-    <!-- Calendar Navigation -->
-    <div class="calendar-nav">
-      <button id="btn-prev" class="nav-btn" aria-label="Mese precedente">
+    <!-- ═══════════ HOME VIEW ═══════════ -->
+    <div id="home-view" class="view view--active">
+      <div class="home-cards">
+        <button class="home-card" onclick="switchView('booking')">
+          <span class="home-card-icon">📅</span>
+          <span class="home-card-label" data-i18n="home.booking">Prenotazione Lab</span>
+        </button>
+        <button class="home-card" onclick="switchView('thesis')">
+          <span class="home-card-icon">📄</span>
+          <span class="home-card-label" data-i18n="home.thesis">Progettini e Tesi</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════ BOOKING VIEW ═══════════ -->
+    <div id="booking-view" class="view">
+      <button class="back-btn" onclick="switchView('home')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
           stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
+        <span data-i18n="back">Indietro</span>
       </button>
-      <div class="month-display">
-        <span id="month-label" class="month-label"></span>
-        <span id="year-label" class="year-label"></span>
+
+      <!-- Booking legend -->
+      <div class="booking-legend">
+        <span class="legend-item">
+          <span class="legend-dot legend-dot--booking"></span>
+          <span data-i18n="legend.student">Studente</span>
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot legend-dot--absence"></span>
+          <span data-i18n="legend.absence">Assenza tutor</span>
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot legend-dot--closed"></span>
+          <span data-i18n="legend.closed">Lab chiuso</span>
+        </span>
       </div>
-      <button id="btn-next" class="nav-btn" aria-label="Mese successivo">
+
+      <!-- Calendar Navigation -->
+      <div class="calendar-nav">
+        <button id="btn-prev" class="nav-btn" aria-label="Mese precedente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <div class="month-display">
+          <span id="month-label" class="month-label"></span>
+          <span id="year-label" class="year-label"></span>
+        </div>
+        <button id="btn-next" class="nav-btn" aria-label="Mese successivo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+        <button id="btn-today" class="today-btn" data-i18n="today">Oggi</button>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <div class="weekday" data-i18n="days.mon">Lun</div>
+          <div class="weekday" data-i18n="days.tue">Mar</div>
+          <div class="weekday" data-i18n="days.wed">Mer</div>
+          <div class="weekday" data-i18n="days.thu">Gio</div>
+          <div class="weekday" data-i18n="days.fri">Ven</div>
+          <div class="weekday weekend" data-i18n="days.sat">Sab</div>
+          <div class="weekday weekend" data-i18n="days.sun">Dom</div>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+      </div>
+
+      <!-- Legend / Guide -->
+      <div class="guide">
+        <h3 class="guide-title" data-i18n="guide.title">📖 Guida rapida</h3>
+        <div class="guide-grid">
+          <div class="guide-item">
+            <span class="guide-swatch guide-swatch--booking"></span>
+            <div>
+              <span data-i18n="guide.blue"><strong>Azzurro</strong> — Prenotazione studente</span><br>
+              <span class="guide-detail" data-i18n="guide.blue_detail">Clicca sul giorno per prenotare il lab con nome e
+                orario.</span>
+            </div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-swatch guide-swatch--absence"></span>
+            <div>
+              <span data-i18n="guide.pink"><strong>Rosa</strong> — Assenza tutor</span><br>
+              <span class="guide-detail" data-i18n="guide.pink_detail">Il tutor segnala le ore in cui non sarà
+                disponibile.</span>
+            </div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-swatch guide-swatch--closed"></span>
+            <div>
+              <span data-i18n="guide.red"><strong>Rosso</strong> — Lab chiuso</span><br>
+              <span class="guide-detail" data-i18n="guide.red_detail">Il tutor ha chiuso il laboratorio per l'intera
+                giornata. Non è possibile
+                prenotare.</span>
+            </div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-swatch guide-swatch--full"></span>
+            <div>
+              <span data-i18n="guide.yellow"><strong>Giallo</strong> — Fascia oraria piena</span><br>
+              <span class="guide-detail" data-i18n="guide.yellow_detail">Max <strong>2 studenti</strong> possono
+                sovrapporsi. Se una fascia è piena, il
+                badge diventa giallo.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ THESIS VIEW ═══════════ -->
+    <div id="thesis-view" class="view">
+      <button class="back-btn" onclick="switchView('home')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
           stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6" />
+          <polyline points="15 18 9 12 15 6" />
         </svg>
+        <span data-i18n="back">Indietro</span>
       </button>
-      <button id="btn-today" class="today-btn" data-i18n="today">Oggi</button>
-    </div>
-
-    <!-- Calendar Grid -->
-    <div class="calendar-container">
-      <div class="calendar-header">
-        <div class="weekday" data-i18n="days.mon">Lun</div>
-        <div class="weekday" data-i18n="days.tue">Mar</div>
-        <div class="weekday" data-i18n="days.wed">Mer</div>
-        <div class="weekday" data-i18n="days.thu">Gio</div>
-        <div class="weekday" data-i18n="days.fri">Ven</div>
-        <div class="weekday weekend" data-i18n="days.sat">Sab</div>
-        <div class="weekday weekend" data-i18n="days.sun">Dom</div>
-      </div>
-      <div id="calendar-grid" class="calendar-grid"></div>
-    </div>
-
-    <!-- Legend / Guide -->
-    <div class="guide">
-      <h3 class="guide-title" data-i18n="guide.title">📖 Guida rapida</h3>
-      <div class="guide-grid">
-        <div class="guide-item">
-          <span class="guide-swatch guide-swatch--booking"></span>
-          <div>
-            <span data-i18n="guide.blue"><strong>Azzurro</strong> — Prenotazione studente</span><br>
-            <span class="guide-detail" data-i18n="guide.blue_detail">Clicca sul giorno per prenotare il lab con nome e
-              orario.</span>
-          </div>
-        </div>
-        <div class="guide-item">
-          <span class="guide-swatch guide-swatch--absence"></span>
-          <div>
-            <span data-i18n="guide.pink"><strong>Rosa</strong> — Assenza tutor</span><br>
-            <span class="guide-detail" data-i18n="guide.pink_detail">Il tutor segnala le ore in cui non sarà
-              disponibile.</span>
-          </div>
-        </div>
-        <div class="guide-item">
-          <span class="guide-swatch guide-swatch--closed"></span>
-          <div>
-            <span data-i18n="guide.red"><strong>Rosso</strong> — Lab chiuso</span><br>
-            <span class="guide-detail" data-i18n="guide.red_detail">Il tutor ha chiuso il laboratorio per l'intera
-              giornata. Non è possibile
-              prenotare.</span>
-          </div>
-        </div>
-        <div class="guide-item">
-          <span class="guide-swatch guide-swatch--full"></span>
-          <div>
-            <span data-i18n="guide.yellow"><strong>Giallo</strong> — Fascia oraria piena</span><br>
-            <span class="guide-detail" data-i18n="guide.yellow_detail">Max <strong>2 studenti</strong> possono
-              sovrapporsi. Se una fascia è piena, il
-              badge diventa giallo.</span>
-          </div>
-        </div>
+      <h2 class="thesis-title" data-i18n="home.thesis">Progettini e Tesi</h2>
+      <div class="thesis-viewer-wrap">
+        <embed class="thesis-viewer" src="Thesis_presentation.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
+          type="application/pdf" />
       </div>
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal (booking) -->
   <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modal-header">
@@ -230,7 +275,13 @@
 
   <script type="module" src="app.js"></script>
   <script>
-    // Dismiss splash screen after animation
+    // ── View switching (works without app.js) ──
+    function switchView(target) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('view--active'));
+      document.getElementById(target + '-view').classList.add('view--active');
+    }
+
+    // ── Dismiss splash screen ──
     setTimeout(() => {
       const splash = document.getElementById('splash');
       if (splash) {
